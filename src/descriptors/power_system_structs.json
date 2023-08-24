@@ -9658,6 +9658,70 @@
             "supertype": "PSS"
         },
         {
+            "struct_name": "PSSPVr",
+            "docstring": "Test PSS to obtain P-Vr frequency response",
+            "fields": [
+                {
+                    "name": "Amp",
+                    "comment": "Amplitude",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Omega",
+                    "comment": "Frequency",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Phi",
+                    "comment": "Phase",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "",
+                    "internal_default": "Vector{Symbol}()",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "PSSPVr has no states",
+                    "internal_default": 0,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "PSS"
+        },
+        {
             "struct_name": "PSSSimple",
             "docstring": "Parameters of a PSS that returns a proportional droop voltage to add to the reference for the AVR",
             "fields": [

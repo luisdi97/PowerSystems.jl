@@ -74,6 +74,7 @@ include("SimpleAFMachine.jl")
 include("SimpleFullMachine.jl")
 include("SimpleMarconatoMachine.jl")
 include("PSSFixed.jl")
+include("PSSPVr.jl")
 include("PSSSimple.jl")
 include("IEEEST.jl")
 include("STAB1.jl")
@@ -129,6 +130,7 @@ export get_AT
 export get_A_set
 export get_Accel
 export get_Ae
+export get_Amp
 export get_At
 export get_B
 export get_B_shunt
@@ -258,6 +260,7 @@ export get_Lvpl_sw
 export get_M_rtf
 export get_N_rtf
 export get_Oel_lim
+export get_Omega
 export get_PF_Flag
 export get_PQ_Flag
 export get_PSS_Hysteresis_param
@@ -268,6 +271,7 @@ export get_P_ref
 export get_PerOp_Flag
 export get_Pf_Flag
 export get_Pfa_ref
+export get_Phi
 export get_Q_Flag
 export get_Q_lim
 export get_Q_lim_inner
@@ -655,6 +659,7 @@ export set_AT!
 export set_A_set!
 export set_Accel!
 export set_Ae!
+export set_Amp!
 export set_At!
 export set_B!
 export set_B_shunt!
@@ -784,6 +789,7 @@ export set_Lvpl_sw!
 export set_M_rtf!
 export set_N_rtf!
 export set_Oel_lim!
+export set_Omega!
 export set_PF_Flag!
 export set_PQ_Flag!
 export set_PSS_Hysteresis_param!
@@ -794,6 +800,7 @@ export set_P_ref!
 export set_PerOp_Flag!
 export set_Pf_Flag!
 export set_Pfa_ref!
+export set_Phi!
 export set_Q_Flag!
 export set_Q_lim!
 export set_Q_lim_inner!

@@ -126,6 +126,7 @@ export SimpleFullMachine
 #PSS Exports
 export PSS
 export PSSFixed
+export PSSPVr
 export PSSSimple
 export IEEEST
 export STAB1
