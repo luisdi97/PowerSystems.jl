@@ -9722,6 +9722,56 @@
             "supertype": "PSS"
         },
         {
+            "struct_name": "PSSVector",
+            "docstring": "Test PSS that uses output signal vector.",
+            "fields": [
+                {
+                    "name": "ts",
+                    "comment": "Time step",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "output_vector",
+                    "comment": "Output signal vector",
+                    "null_value": "Float64[]",
+                    "data_type": "Vector{Float64}"
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "",
+                    "internal_default": "Vector{Symbol}()",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "PSSVector has no states",
+                    "internal_default": 0,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "PSS"
+        },
+        {
             "struct_name": "PSSSimple",
             "docstring": "Parameters of a PSS that returns a proportional droop voltage to add to the reference for the AVR",
             "fields": [

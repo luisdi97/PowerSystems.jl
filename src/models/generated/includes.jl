@@ -75,6 +75,7 @@ include("SimpleFullMachine.jl")
 include("SimpleMarconatoMachine.jl")
 include("PSSFixed.jl")
 include("PSSPVr.jl")
+include("PSSVector.jl")
 include("PSSSimple.jl")
 include("IEEEST.jl")
 include("STAB1.jl")
@@ -557,6 +558,7 @@ export get_number_of_steps
 export get_operation_cost
 export get_outflow
 export get_output_active_power_limits
+export get_output_vector
 export get_peak_active_power
 export get_peak_reactive_power
 export get_phase_angle_limits
@@ -621,6 +623,7 @@ export get_time_limits_pump
 export get_time_series_container
 export get_to
 export get_to_branch_control
+export get_ts
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -1086,6 +1089,7 @@ export set_number_of_steps!
 export set_operation_cost!
 export set_outflow!
 export set_output_active_power_limits!
+export set_output_vector!
 export set_peak_active_power!
 export set_peak_reactive_power!
 export set_phase_angle_limits!
@@ -1150,6 +1154,7 @@ export set_time_limits_pump!
 export set_time_series_container!
 export set_to!
 export set_to_branch_control!
+export set_ts!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!
