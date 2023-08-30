@@ -9772,6 +9772,178 @@
             "supertype": "PSS"
         },
         {
+            "struct_name": "PSSDeePC",
+            "docstring": "Test PSS that uses DeePC.",
+            "fields": [
+                {
+                    "name": "ts",
+                    "comment": "Time step",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "tinitial",
+                    "comment": "Initial time",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "tfinal",
+                    "comment": "Final time",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T_ini",
+                    "comment": "DeePC T_ini parameter",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "N",
+                    "comment": "DeePC N parameter",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "k",
+                    "comment": "DeePC k parameter",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Q_factor",
+                    "comment": "Multiplicative factor to get the matrix Q as Q = Q_factor * I",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "lambda_g",
+                    "comment": "DeePC lambda_g parameter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "lambda_y",
+                    "comment": "DeePC lambda_y parameter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "u_d",
+                    "comment": "Inputs' data obtained offline",
+                    "null_value": "Matrix{Float64}(undef,0,0)",
+                    "data_type": "Matrix{Float64}"
+                },
+                {
+                    "name": "y_d",
+                    "comment": "Outputs' data obtained offline",
+                    "null_value": "Matrix{Float64}(undef,0,0)",
+                    "data_type": "Matrix{Float64}"
+                },
+                {
+                    "name": "y_ref",
+                    "comment": "Outputs' reference values",
+                    "null_value": "Vector{Float64}(undef,0)",
+                    "data_type": "Vector{Float64}"
+                },
+                {
+                    "name": "lower_u",
+                    "comment": "Inputs' lower bounds",
+                    "null_value": "Vector{Float64}(undef,0)",
+                    "data_type": "Vector{Float64}"
+                },
+                {
+                    "name": "upper_u",
+                    "comment": "Inputs' upper bounds",
+                    "null_value": "Vector{Float64}(undef,0)",
+                    "data_type": "Vector{Float64}"
+                },
+                {
+                    "name": "lower_y",
+                    "comment": "Outputs' lower bounds",
+                    "null_value": "Vector{Float64}(undef,0)",
+                    "data_type": "Vector{Float64}"
+                },
+                {
+                    "name": "upper_y",
+                    "comment": "Outputs' upper bounds",
+                    "null_value": "Vector{Float64}(undef,0)",
+                    "data_type": "Vector{Float64}"
+                },
+                {
+                    "name": "indexes_saved_outputs",
+                    "comment": "Indexes of the desired outputs in the saved_values_unique vector",
+                    "null_value": "Vector{Int}(undef,0)",
+                    "data_type": "Vector{Int}"
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "",
+                    "internal_default": "Vector{Symbol}()",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "PSSDeePC has no states",
+                    "internal_default": 0,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "PSS"
+        },
+        {
             "struct_name": "PSSSimple",
             "docstring": "Parameters of a PSS that returns a proportional droop voltage to add to the reference for the AVR",
             "fields": [

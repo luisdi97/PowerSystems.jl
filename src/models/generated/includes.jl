@@ -76,6 +76,7 @@ include("SimpleMarconatoMachine.jl")
 include("PSSFixed.jl")
 include("PSSPVr.jl")
 include("PSSVector.jl")
+include("PSSDeePC.jl")
 include("PSSSimple.jl")
 include("IEEEST.jl")
 include("STAB1.jl")
@@ -259,6 +260,7 @@ export get_Lv_pnts
 export get_Lvpl1
 export get_Lvpl_sw
 export get_M_rtf
+export get_N
 export get_N_rtf
 export get_Oel_lim
 export get_Omega
@@ -274,6 +276,7 @@ export get_Pf_Flag
 export get_Pfa_ref
 export get_Phi
 export get_Q_Flag
+export get_Q_factor
 export get_Q_lim
 export get_Q_lim_inner
 export get_Q_ref
@@ -325,6 +328,7 @@ export get_T_fltr
 export get_T_ft
 export get_T_fv
 export get_T_g
+export get_T_ini
 export get_T_iq
 export get_T_p
 export get_T_pord
@@ -494,6 +498,7 @@ export get_gate_position_limits
 export get_hysteresis_binary_logic
 export get_impedance_active_power
 export get_impedance_reactive_power
+export get_indexes_saved_outputs
 export get_inflow
 export get_initial_ace
 export get_initial_energy
@@ -516,6 +521,7 @@ export get_inverter_firing_angle
 export get_inverter_tap_limits
 export get_inverter_xrc
 export get_is_filter_differential
+export get_k
 export get_k1
 export get_k2
 export get_kWh_Cap
@@ -533,11 +539,15 @@ export get_kpi
 export get_kpv
 export get_kq
 export get_kω
+export get_lambda_g
+export get_lambda_y
 export get_lf
 export get_lg
 export get_load_response
 export get_load_zone
 export get_loss
+export get_lower_u
+export get_lower_y
 export get_lv
 export get_magnitude
 export get_max_active_power
@@ -615,15 +625,20 @@ export get_tF_delay
 export get_tV_delay
 export get_tap
 export get_tfh
+export get_tfinal
 export get_tfl
 export get_time_at_status
 export get_time_frame
 export get_time_limits
 export get_time_limits_pump
 export get_time_series_container
+export get_tinitial
 export get_to
 export get_to_branch_control
 export get_ts
+export get_u_d
+export get_upper_u
+export get_upper_y
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -632,6 +647,8 @@ export get_vl_pnts
 export get_voltage
 export get_voltage_limits
 export get_x
+export get_y_d
+export get_y_ref
 export get_α
 export get_β
 export get_γ_d1
@@ -790,6 +807,7 @@ export set_Lv_pnts!
 export set_Lvpl1!
 export set_Lvpl_sw!
 export set_M_rtf!
+export set_N!
 export set_N_rtf!
 export set_Oel_lim!
 export set_Omega!
@@ -805,6 +823,7 @@ export set_Pf_Flag!
 export set_Pfa_ref!
 export set_Phi!
 export set_Q_Flag!
+export set_Q_factor!
 export set_Q_lim!
 export set_Q_lim_inner!
 export set_Q_ref!
@@ -856,6 +875,7 @@ export set_T_fltr!
 export set_T_ft!
 export set_T_fv!
 export set_T_g!
+export set_T_ini!
 export set_T_iq!
 export set_T_p!
 export set_T_pord!
@@ -1025,6 +1045,7 @@ export set_gate_position_limits!
 export set_hysteresis_binary_logic!
 export set_impedance_active_power!
 export set_impedance_reactive_power!
+export set_indexes_saved_outputs!
 export set_inflow!
 export set_initial_ace!
 export set_initial_energy!
@@ -1047,6 +1068,7 @@ export set_inverter_firing_angle!
 export set_inverter_tap_limits!
 export set_inverter_xrc!
 export set_is_filter_differential!
+export set_k!
 export set_k1!
 export set_k2!
 export set_kWh_Cap!
@@ -1064,11 +1086,15 @@ export set_kpi!
 export set_kpv!
 export set_kq!
 export set_kω!
+export set_lambda_g!
+export set_lambda_y!
 export set_lf!
 export set_lg!
 export set_load_response!
 export set_load_zone!
 export set_loss!
+export set_lower_u!
+export set_lower_y!
 export set_lv!
 export set_magnitude!
 export set_max_active_power!
@@ -1146,15 +1172,20 @@ export set_tF_delay!
 export set_tV_delay!
 export set_tap!
 export set_tfh!
+export set_tfinal!
 export set_tfl!
 export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
 export set_time_limits_pump!
 export set_time_series_container!
+export set_tinitial!
 export set_to!
 export set_to_branch_control!
 export set_ts!
+export set_u_d!
+export set_upper_u!
+export set_upper_y!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!
@@ -1163,6 +1194,8 @@ export set_vl_pnts!
 export set_voltage!
 export set_voltage_limits!
 export set_x!
+export set_y_d!
+export set_y_ref!
 export set_α!
 export set_β!
 export set_γ_d1!

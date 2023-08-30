@@ -128,6 +128,7 @@ export PSS
 export PSSFixed
 export PSSPVr
 export PSSVector
+export PSSDeePC
 export PSSSimple
 export IEEEST
 export STAB1
