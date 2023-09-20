@@ -27,7 +27,7 @@ const SYSTEM_KWARGS = Set((
 ))
 
 # This will be used in the future to handle serialization changes.
-const DATA_FORMAT_VERSION = "2.0.0"
+const DATA_FORMAT_VERSION = "3.0.0"
 
 mutable struct SystemMetadata <: IS.InfrastructureSystemsType
     name::Union{Nothing, String}
@@ -51,7 +51,7 @@ System(; kwargs...)
 
 # Arguments
 - `base_power::Float64`: the base power value for the system
-- `buses::Vector{Bus}`: an array of buses
+- `buses::Vector{ACBus}`: an array of buses
 - `components...`: Each element must be an iterable containing subtypes of Component.
 
 # Keyword arguments
@@ -136,7 +136,7 @@ end
 """
 System constructor when components are constructed externally.
 """
-function System(base_power::Float64, buses::Vector{Bus}, components...; kwargs...)
+function System(base_power::Float64, buses::Vector{ACBus}, components...; kwargs...)
     data = _create_system_data_from_kwargs(; kwargs...)
     sys = System(data, base_power; kwargs...)
 
@@ -159,10 +159,10 @@ end
 function System(
     ::Nothing;
     buses = [
-        Bus(;
+        ACBus(;
             number = 0,
             name = "init",
-            bustype = BusTypes.REF,
+            bustype = ACBusTypes.REF,
             angle = 0.0,
             magnitude = 0.0,
             voltage_limits = (min = 0.0, max = 0.0),
@@ -199,41 +199,29 @@ function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
         runchecks = get(kwargs, :runchecks, true)
-        # File paths in the JSON are relative. Temporarily change to this directory in order
-        # to find all dependent files.
-        orig_dir = pwd()
-        new_dir = dirname(file_path)
-        if isempty(new_dir)
-            new_dir = "."
-        end
-        cd(new_dir)
-        try
-            time_series_read_only = get(kwargs, :time_series_read_only, false)
-            time_series_directory = get(kwargs, :time_series_directory, nothing)
-            sys = deserialize(
-                System,
-                basename(file_path);
-                time_series_read_only = time_series_read_only,
-                runchecks = runchecks,
-                time_series_directory = time_series_directory,
-            )
-            runchecks && check(sys)
-            if assign_new_uuids
-                IS.assign_new_uuid!(sys)
-                for component in get_components(Component, sys)
-                    IS.assign_new_uuid!(component)
-                end
-                for component in
-                    IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-                    IS.assign_new_uuid!(component)
-                end
-                # Note: this does not change UUIDs for time series data because they are
-                # shared with components.
+        time_series_read_only = get(kwargs, :time_series_read_only, false)
+        time_series_directory = get(kwargs, :time_series_directory, nothing)
+        sys = deserialize(
+            System,
+            file_path;
+            time_series_read_only = time_series_read_only,
+            runchecks = runchecks,
+            time_series_directory = time_series_directory,
+        )
+        runchecks && check(sys)
+        if assign_new_uuids
+            IS.assign_new_uuid!(sys)
+            for component in get_components(Component, sys)
+                IS.assign_new_uuid!(component)
             end
-            return sys
-        finally
-            cd(orig_dir)
+            for component in
+                IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
+                IS.assign_new_uuid!(component)
+            end
+            # Note: this does not change UUIDs for time series data because they are
+            # shared with components.
         end
+        return sys
     else
         throw(DataFormatError("$file_path is not a supported file type"))
     end
@@ -498,7 +486,7 @@ function add_component!(
         # occurred when the original addition ran and do not apply to that scenario.
         handle_component_addition!(sys, component; kwargs...)
         # Special condition required to populate the bus numbers in the system after
-    elseif component isa Bus
+    elseif component isa ACBus
         handle_component_addition!(sys, component; kwargs...)
     end
 
@@ -1062,14 +1050,14 @@ function get_aggregation_topology_mapping(
     ::Type{T},
     sys::System,
 ) where {T <: AggregationTopology}
-    mapping = Dict{String, Vector{Bus}}()
+    mapping = Dict{String, Vector{ACBus}}()
     accessor_func = get_aggregation_topology_accessor(T)
-    for bus in get_components(Bus, sys)
+    for bus in get_components(ACBus, sys)
         aggregator = accessor_func(bus)
         name = get_name(aggregator)
         buses = get(mapping, name, nothing)
         if isnothing(buses)
-            mapping[name] = Vector{Bus}([bus])
+            mapping[name] = Vector{ACBus}([bus])
         else
             push!(buses, bus)
         end
@@ -1087,8 +1075,8 @@ end
 
 function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationTopology}
     accessor_func = get_aggregation_topology_accessor(T)
-    buses = Vector{Bus}()
-    for bus in IS.get_components(Bus, data)
+    buses = Vector{ACBus}()
+    for bus in IS.get_components(ACBus, data)
         _aggregator = accessor_func(bus)
         if IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
             push!(buses, bus)
@@ -1304,7 +1292,7 @@ IS.validate_struct(component::Component) = validate_component(component)
 Check system consistency and validity.
 """
 function check(sys::System)
-    buses = get_components(Bus, sys)
+    buses = get_components(ACBus, sys)
     slack_bus_check(buses)
     buscheck(buses)
     critical_components_check(sys)
@@ -1407,6 +1395,14 @@ function IS.deserialize(
 )
     raw = open(filename) do io
         JSON3.read(io, Dict)
+    end
+
+    # These file paths are relative to the system file.
+    directory = dirname(filename)
+    for file_key in ("time_series_storage_file", "validation_descriptor_file")
+        if haskey(raw["data"], file_key) && !isabspath(raw["data"][file_key])
+            raw["data"][file_key] = joinpath(directory, raw["data"][file_key])
+        end
     end
 
     # Read any field that is defined in System but optional for the constructors and not
@@ -1539,14 +1535,14 @@ end
 Return bus with name.
 """
 function get_bus(sys::System, name::AbstractString)
-    return get_component(Bus, sys, name)
+    return get_component(ACBus, sys, name)
 end
 
 """
 Return bus with bus_number.
 """
 function get_bus(sys::System, bus_number::Int)
-    for bus in get_components(Bus, sys)
+    for bus in get_components(ACBus, sys)
         if bus.number == bus_number
             return bus
         end
@@ -1559,8 +1555,8 @@ end
 Return all buses values with bus_numbers.
 """
 function get_buses(sys::System, bus_numbers::Set{Int})
-    buses = Vector{Bus}()
-    for bus in get_components(Bus, sys)
+    buses = Vector{ACBus}()
+    for bus in get_components(ACBus, sys)
         if bus.number in bus_numbers
             push!(buses, bus)
         end
@@ -1707,7 +1703,7 @@ function check_component_addition(sys::System, dyn_injector::DynamicInjection; k
     return
 end
 
-function check_component_addition(sys::System, bus::Bus; kwargs...)
+function check_component_addition(sys::System, bus::ACBus; kwargs...)
     number = get_number(bus)
     if number in sys.bus_numbers
         throw(ArgumentError("bus number $number is already stored in the system"))
@@ -1724,7 +1720,7 @@ function check_component_addition(sys::System, bus::Bus; kwargs...)
     end
 end
 
-function handle_component_addition!(sys::System, bus::Bus; kwargs...)
+function handle_component_addition!(sys::System, bus::ACBus; kwargs...)
     number = get_number(bus)
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
@@ -1791,7 +1787,7 @@ end
 """
 Throws ArgumentError if the bus number is not stored in the system.
 """
-function handle_component_removal!(sys::System, bus::Bus)
+function handle_component_removal!(sys::System, bus::ACBus)
     _handle_component_removal_common!(bus)
     number = get_number(bus)
     @assert number in sys.bus_numbers "bus number $number is not stored"
@@ -1816,7 +1812,7 @@ end
 
 function handle_component_removal!(sys::System, value::T) where {T <: AggregationTopology}
     _handle_component_removal_common!(value)
-    for device in get_components(Bus, sys)
+    for device in get_components(ACBus, sys)
         if get_aggregation_topology_accessor(T)(device) == value
             _remove_aggregration_topology!(device, value)
         end
