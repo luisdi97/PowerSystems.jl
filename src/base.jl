@@ -1407,7 +1407,16 @@ function IS.deserialize(
 
     # Read any field that is defined in System but optional for the constructors and not
     # already handled here.
-    handled = ("data", "units_settings", "bus_numbers", "internal", "data_format_version")
+    handled = (
+        "data",
+        "units_settings",
+        "bus_numbers",
+        "internal",
+        "data_format_version",
+        "metadata",
+        "name",
+        "description",
+    )
     parsed_kwargs = Dict{Symbol, Any}()
     for field in setdiff(keys(raw), handled)
         parsed_kwargs[Symbol(field)] = raw[field]
@@ -1429,7 +1438,14 @@ function IS.deserialize(
     name = get(metadata, "name", nothing)
     description = get(metadata, "description", nothing)
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units, internal; name = name, description = description, kwargs...)
+    sys = System(
+        data,
+        units,
+        internal;
+        name = name,
+        description = description,
+        parsed_kwargs...,
+    )
 
     if raw["data_format_version"] != DATA_FORMAT_VERSION
         pre_deserialize_conversion!(raw, sys)
@@ -1920,9 +1936,9 @@ Converts a Line component to a MonitoredLine component and replaces the original
 system
 """
 function convert_component!(
-    linetype::Type{MonitoredLine},
+    sys::System,
     line::Line,
-    sys::System;
+    linetype::Type{MonitoredLine};
     kwargs...,
 )
     new_line = linetype(
@@ -1954,9 +1970,9 @@ Converts a MonitoredLine component to a Line component and replaces the original
 system
 """
 function convert_component!(
-    linetype::Type{Line},
+    sys::System,
     line::MonitoredLine,
-    sys::System;
+    linetype::Type{Line};
     kwargs...,
 )
     force = get(kwargs, :force, false)
@@ -1989,6 +2005,39 @@ function convert_component!(
     copy_time_series!(new_line, line)
     remove_component!(sys, line)
     return
+end
+
+"""
+Converts a PowerLoad component to a StandardLoad component and replaces the original in the
+system. Does not set any fields in StandardLoad that lack a PowerLoad equivalent
+"""
+function convert_component!(
+    sys::System,
+    old_load::PowerLoad,
+    new_type::Type{StandardLoad};
+    kwargs...,
+)
+    new_load = new_type(;
+        name = get_name(old_load),
+        available = get_available(old_load),
+        bus = get_bus(old_load),
+        base_power = get_base_power(old_load),
+        constant_active_power = get_active_power(old_load),
+        constant_reactive_power = get_reactive_power(old_load),
+        max_constant_active_power = get_max_active_power(old_load),
+        max_constant_reactive_power = get_max_active_power(old_load),
+        dynamic_injector = get_dynamic_injector(old_load),
+        internal = deepcopy(get_internal(old_load)),
+        services = Device[],
+        time_series_container = InfrastructureSystems.TimeSeriesContainer(),
+    )
+    IS.assign_new_uuid!(new_load)
+    add_component!(sys, new_load)
+    copy_time_series!(new_load, old_load)
+    for service in get_services(old_load)
+        add_service!(new_load, service, sys)
+    end
+    remove_component!(sys, old_load)
 end
 
 function _validate_or_skip!(sys, component, skip_validation)

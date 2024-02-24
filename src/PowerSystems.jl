@@ -155,6 +155,7 @@ export GeneralGovModel
 export HydroTurbineGov
 export IEEETurbineGov1
 export SteamTurbineGov1
+export DEGOV
 
 # Converter Exports
 export Converter
